@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const setupScrollTrigger = () => {
     ScrollTrigger.create({
-      trigger: ".hero",
+      trigger: ".hero-section",
       start: "top top",
       end: `+=${window.innerHeight * 7}px`,
       pin: true,

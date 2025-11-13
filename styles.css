@@ -105,22 +105,44 @@ nav .nav-buttons {
   justify-content: flex-end;
 }
 
-section {
+.hero-section {
   position: relative;
   height: 100svh;
   overflow: hidden;
 }
 
-.outro {
+.section-1 {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+  height: 70svh;
   padding: 2rem;
-  background-color: var(--bg);
+  background-color: #81050f;
   color: var(--fg);
 }
 
+.section-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100svh;
+  padding: 2rem;
+  background-color: #6ad821;
+  color: var(--fg);
+}
+
+.section-3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 120svh;
+  padding: 2rem;
+  background-color: #0074d9;
+  color: var(--fg);
+}
 canvas {
   width: 100%;
   height: 100%;
