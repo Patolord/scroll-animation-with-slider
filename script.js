@@ -1,16 +1,16 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 document.addEventListener("DOMContentLoaded", () => {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
-  const lenis = new Lenis();
-  lenis.on("scroll", ScrollTrigger.update);
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
+  ScrollSmoother.create({
+    wrapper: "#smooth-wrapper",
+    content: "#smooth-content",
+    smooth: 1,
+    effects: true,
   });
-  gsap.ticker.lagSmoothing(0);
 
   const nav = document.querySelector("nav");
   const header = document.querySelector(".header");
@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
       start: "top top",
       end: `+=${window.innerHeight * 7}px`,
       pin: true,
+      markers: true,
       pinSpacing: true,
       scrub: 1,
       onUpdate: (self) => {
