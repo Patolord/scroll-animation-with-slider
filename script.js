@@ -156,6 +156,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       },
     });
+    ScrollTrigger.create({
+      trigger: ".sections-wrapper",
+      start: "top 80%",
+      end: "bottom bottom",
+      endTrigger: ".section-3",
+      scrub: 1,
+      markers: true,
+    });
   };
 
   window.addEventListener("resize", () => {
