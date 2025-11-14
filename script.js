@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ScrollSmoother.create({
     wrapper: "#smooth-wrapper",
     content: "#smooth-content",
-    smooth: 1,
+    smooth: 0.1,
     effects: true,
   });
 
@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroImg = document.querySelector(".hero-img");
   const canvas = document.querySelector("canvas");
   const context = canvas.getContext("2d");
+  const progressBar = document.querySelector(".progress-bar");
+  const progressBarInner = document.querySelector(".progress-bar-inner");
 
   const setCanvasSize = () => {
     const pixelRatio = window.devicePixelRatio || 1;
@@ -85,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const setupScrollTrigger = () => {
+    //hero section
     ScrollTrigger.create({
       trigger: ".hero-section",
       start: "top top",
@@ -95,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scrub: 1,
       onUpdate: (self) => {
         const progress = self.progress;
+        // console.log(progress); // Removed to prevent memory leak
 
         const animationProgress = Math.min(progress / 0.9, 1);
         const targetFrame = Math.round(animationProgress * (frameCount - 1));
@@ -156,13 +160,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       },
     });
+    //sections wrapper - create progress bar
+
     ScrollTrigger.create({
       trigger: ".sections-wrapper",
-      start: "top 80%",
+      start: "top bottom",
       end: "bottom bottom",
-      endTrigger: ".section-3",
       scrub: 1,
       markers: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        gsap.set(progressBarInner, { height: `${progress * 100}%` });
+      },
+      onEnter: () => {
+        gsap.to(progressBar, { opacity: 1, duration: 0.3 });
+      },
+      onLeave: () => {
+        gsap.to(progressBar, { opacity: 0, duration: 0.3 });
+      },
+      onEnterBack: () => {
+        gsap.to(progressBar, { opacity: 1, duration: 0.3 });
+      },
+      onLeaveBack: () => {
+        gsap.to(progressBar, { opacity: 0, duration: 0.3 });
+        gsap.set(progressBarInner, { height: "0%" });
+      },
     });
   };
 
