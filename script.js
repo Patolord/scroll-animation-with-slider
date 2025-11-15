@@ -15,78 +15,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const nav = document.querySelector("nav");
   const header = document.querySelector(".header");
   const heroImg = document.querySelector(".hero-img");
-  const canvas = document.querySelector("canvas");
-  const context = canvas.getContext("2d");
+  const video = document.querySelector("video");
   const progressBar = document.querySelector(".progress-bar");
   const progressBarInner = document.querySelector(".progress-bar-inner");
 
-  const setCanvasSize = () => {
-    const pixelRatio = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * pixelRatio;
-    canvas.height = window.innerHeight * pixelRatio;
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-    context.scale(pixelRatio, pixelRatio);
-  };
-  setCanvasSize();
+  // Set video source and configuration
+  video.src = "/hero-vid-max.mp4";
+  video.pause(); // Ensure video doesn't autoplay
 
-  const frameCount = 189;
-  const currentFrame = (index) =>
-    `/frames/frame_${(index + 1).toString().padStart(3, "0")}.jpg`;
+  let isVideoReady = false;
 
-  let images = [];
-  let videoFrames = { frame: 0 };
-  let imagesToLoad = frameCount;
-
-  const onLoad = () => {
-    imagesToLoad--;
-
-    if (!imagesToLoad) {
-      render();
-      setupScrollTrigger();
-    }
-  };
-
-  for (let i = 0; i < frameCount; i++) {
-    const img = new Image();
-    img.onload = onLoad;
-    img.onerror = function () {
-      onLoad.call(this);
-    };
-    img.src = currentFrame(i);
-    images.push(img);
-  }
-
-  const render = () => {
-    const canvasWidth = window.innerWidth;
-    const canvasHeight = window.innerHeight;
-
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    const img = images[videoFrames.frame];
-    if (img && img.complete && img.naturalWidth > 0) {
-      const imageAspect = img.naturalWidth / img.naturalHeight;
-      const canvasAspect = canvasWidth / canvasHeight;
-
-      let drawWidth, drawHeight, drawX, drawY;
-
-      if (imageAspect > canvasAspect) {
-        drawHeight = canvasHeight;
-        drawWidth = drawHeight * imageAspect;
-        drawX = (canvasWidth - drawWidth) / 2;
-        drawY = 0;
-      } else {
-        drawWidth = canvasWidth;
-        drawHeight = drawWidth / imageAspect;
-        drawX = 0;
-        drawY = (canvasHeight - drawHeight) / 2;
-      }
-
-      context.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-    }
-  };
+  // Wait for video to be ready for seeking
+  video.addEventListener("loadeddata", () => {
+    isVideoReady = true;
+    setupScrollTrigger();
+  });
 
   const setupScrollTrigger = () => {
+    let frameRequested = false;
+    let targetVideoTime = 0;
+
+    const updateVideoTime = () => {
+      if (isVideoReady && video.duration) {
+        video.currentTime = targetVideoTime;
+      }
+      frameRequested = false;
+    };
+
     //hero section
     ScrollTrigger.create({
       trigger: ".hero-section",
@@ -95,15 +50,19 @@ document.addEventListener("DOMContentLoaded", () => {
       pin: true,
       markers: true,
       pinSpacing: true,
-      scrub: 1,
+      scrub: true,
       onUpdate: (self) => {
         const progress = self.progress;
-        // console.log(progress); // Removed to prevent memory leak
 
+        // Calculate target video time
         const animationProgress = Math.min(progress / 0.9, 1);
-        const targetFrame = Math.round(animationProgress * (frameCount - 1));
-        videoFrames.frame = targetFrame;
-        render();
+        targetVideoTime = animationProgress * video.duration;
+
+        // Use requestAnimationFrame to batch video seeks
+        if (!frameRequested) {
+          frameRequested = true;
+          requestAnimationFrame(updateVideoTime);
+        }
 
         if (progress <= 0.1) {
           const navProgress = progress / 0.1;
@@ -189,8 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.addEventListener("resize", () => {
-    setCanvasSize();
-    render();
     ScrollTrigger.refresh();
   });
 });
