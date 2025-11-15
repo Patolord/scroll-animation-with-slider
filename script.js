@@ -5,12 +5,12 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 document.addEventListener("DOMContentLoaded", () => {
   gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
-  ScrollSmoother.create({
+  /*   ScrollSmoother.create({
     wrapper: "#smooth-wrapper",
     content: "#smooth-content",
     smooth: 2,
     effects: true,
-  });
+  }); */
 
   const nav = document.querySelector("nav");
   const header = document.querySelector(".header");
@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Wait for video to be ready for seeking
   video.addEventListener("loadeddata", () => {
     isVideoReady = true;
+    video.currentTime = 0; // Ensure video starts at first frame
     setupScrollTrigger();
   });
 
